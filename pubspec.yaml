@@ -1,0 +1,32 @@
+name: local_happens
+description: "A new Flutter project."
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ^3.10.8
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  flutter_bloc: ^9.1.1
+
+  go_router: ^17.1.0
+
+  firebase_core: ^4.5.0
+  firebase_auth: ^6.2.0
+  firebase_storage: ^13.1.0
+  cloud_firestore: ^6.1.3
+  get_it: ^9.2.1
+  equatable: ^2.0.8
+  google_sign_in: ^7.2.0
+  google_maps_flutter: ^2.15.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true

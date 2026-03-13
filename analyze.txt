@@ -1,0 +1,6 @@
+Analyzing local_happens...                                      
+
+   info - The type parameter name 'Type' matches a visible type name - lib\core\usecases\usecase.dart:3:24 - avoid_types_as_parameter_names
+  error - Target of URI doesn't exist: '../../events/domain/entities/event.dart' - lib\features\favorites\domain\repositories\favorite_repository.dart:1:8 - uri_does_not_exist
+  error - The name 'Event' isn't a type, so it can't be used as a type argument - lib\features\favorites\domain\repositories\favorite_repository.dart:4:15 - non_type_as_type_argument
+
