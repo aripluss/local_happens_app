@@ -1,21 +1,27 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:local_happens/features/events/domain/usecases/delete_event.dart';
 import 'package:local_happens/features/events/domain/usecases/filter_events.dart';
-import 'package:local_happens/features/events/domain/usecases/get_event_by_id.dart';
+import 'package:local_happens/features/events/domain/usecases/get_cities_by_ids.dart';
+import 'package:local_happens/features/events/domain/usecases/get_users_by_ids.dart';
 import 'package:local_happens/features/events/domain/usecases/update_event.dart';
-import 'package:local_happens/core/usecases/usecase.dart';
 import 'package:local_happens/features/events/domain/entities/event.dart';
 import 'package:local_happens/features/events/domain/usecases/create_event.dart';
-import 'package:local_happens/features/events/domain/usecases/get_events.dart';
+import 'package:local_happens/features/events/domain/usecases/get_events_stream.dart';
+import 'package:local_happens/features/events/presentation/models/event_ui_model.dart';
 import 'events_state.dart';
 
 class EventsCubit extends Cubit<EventsState> {
-  final GetEvents getEvents;
+  final GetEventsStream getEvents;
   final CreateEvent createEventUseCase;
   final UpdateEvent updateEventUseCase;
   final DeleteEvent deleteEventUseCase;
   final FilterEvents filterEventsUseCase;
-  final GetEventById getEventByIdUseCase;
+  final GetUsersByIds getUsersByIdsUseCase;
+  final GetCitiesByIds getCitiesByIdsUseCase;
+
+  StreamSubscription? _subscription;
 
   EventsCubit({
     required this.getEvents,
@@ -23,64 +29,82 @@ class EventsCubit extends Cubit<EventsState> {
     required this.updateEventUseCase,
     required this.deleteEventUseCase,
     required this.filterEventsUseCase,
-    required this.getEventByIdUseCase,
+    required this.getUsersByIdsUseCase,
+    required this.getCitiesByIdsUseCase,
   }) : super(EventsInitial());
 
-  Future<void> loadEvents() async {
+  void subscribeEvents() {
     emit(EventsLoading());
-    try {
-      final events = await getEvents(NoParams());
-      emit(EventsLoaded(events));
-    } catch (e) {
-      emit(EventsError(e.toString()));
-    }
+    _subscription?.cancel();
+    _subscription = getEvents().listen((events) async {
+      if (events.isEmpty) {
+        emit(EventsLoaded([]));
+        return;
+      }
+      final citiesIds = events.map((event) => event.cityId).toSet();
+      final usersIds = events.map((event) => event.userId).toSet();
+      
+      final cities = await getCitiesByIdsUseCase(citiesIds);
+      final users = await getUsersByIdsUseCase(usersIds);
+      final eventsUiModel = events.map((event) {
+        return EventUiModel.fromEvent(
+          event,
+          cities.firstWhere((city) => city.id == event.cityId).name,
+          users.firstWhere((user) => user.id == event.userId).name,
+        );
+      }).toList();
+      emit(EventsLoaded(eventsUiModel));
+    }, onError: (error) => emit(EventsError(error.toString())));
+  }
+
+  @override
+  Future<void> close() {
+    _subscription?.cancel();
+    return super.close();
   }
 
   Future<void> filterEvents(String query) async {
     emit(EventsLoading());
     try {
       final events = await filterEventsUseCase(query);
-      emit(EventsLoaded(events));
+      final citiesIds = events.map((event) => event.cityId).toSet();
+      final usersIds = events.map((event) => event.userId).toSet();
+
+      final cities = await getCitiesByIdsUseCase(citiesIds);
+      final users = await getUsersByIdsUseCase(usersIds);
+      final eventsUiModel = events.map((event) {
+        return EventUiModel.fromEvent(
+          event,
+          cities.firstWhere((city) => city.id == event.cityId).name,
+          users.firstWhere((user) => user.id == event.userId).name,
+        );
+      }).toList();
+      emit(EventsLoaded(eventsUiModel));
     } catch (e) {
       emit(EventsError(e.toString()));
     }
   }
 
-  Future<void> getEventById(String id) async {
-    emit(EventsLoading());
-    try {
-      final event = await getEventByIdUseCase(id);
-      emit(EventLoaded(event));
-    } catch (e) {
-      emit(EventsError(e.toString()));
-    }
-  }
 
   Future<void> createEvent(Event event) async {
-    emit(EventsLoading());
     try {
       await createEventUseCase(event);
-      await loadEvents();
     } catch (e) {
       emit(EventsError(e.toString()));
     }
   }
 
   Future<void> updateEvent(Event event) async {
-    emit(EventsLoading());
     try {
       await updateEventUseCase(event);
-      await loadEvents();
     } catch (e) {
       emit(EventsError(e.toString()));
     }
   }
 
   Future<void> deleteEvent(Event event) async {
-    emit(EventsLoading());
     try {
       await deleteEventUseCase(event);
-      await loadEvents();
     } catch (e) {
       emit(EventsError(e.toString()));
     }

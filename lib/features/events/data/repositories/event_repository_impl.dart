@@ -1,4 +1,5 @@
 import '../../domain/entities/event.dart';
+import '../../domain/entities/event_status.dart';
 import '../../domain/repositories/event_repository.dart';
 import '../datasources/event_remote_datasource.dart';
 import '../models/event_model.dart';
@@ -9,9 +10,11 @@ class EventRepositoryImpl implements EventRepository {
   EventRepositoryImpl({required this.remoteDatasource});
 
   @override
-  Future<List<Event>> getEvents() async {
-    final models = await remoteDatasource.getEvents();
-    return models.map((model) => model.toEntity()).toList();
+  Stream<List<Event>> getEventsStream() {
+    final modelsStream = remoteDatasource.getEventsStream();
+    return modelsStream.map(
+      (models) => models.map((model) => model.toEntity()).toList(),
+    );
   }
 
   @override
@@ -28,19 +31,46 @@ class EventRepositoryImpl implements EventRepository {
 
   @override
   Future<Event> getEventById(String id) async {
-    // TODO: implement getEventById
-    throw UnimplementedError();
+    final model = await remoteDatasource.getEventById(id);
+    return model.toEntity();
   }
 
   @override
-  Future<Event> updateEvent(Event event) {
-    // TODO: implement updateEvent
-    throw UnimplementedError();
+  Future<Event> updateEvent(Event event) async {
+    final eventModel = EventModel.fromEntity(event);
+    final updatedModel = await remoteDatasource.updateEvent(eventModel);
+    return updatedModel.toEntity();
   }
 
   @override
-  Future<List<Event>> filterEvents(String query) {
-    // TODO: implement filterEvents
-    throw UnimplementedError();
+  Future<List<Event>> filterEvents(String query) async {
+    final models = await remoteDatasource.filterEvents(query);
+    return models.map((model) => model.toEntity()).toList();
+  }
+
+  @override
+  Stream<List<Event>> getUserEventsStream(String userId) {
+    final modelsStream = remoteDatasource.getUserEventsStream(userId);
+    return modelsStream.map(
+      (models) => models.map((model) => model.toEntity()).toList(),
+    );
+  }
+
+  @override
+  Stream<List<Event>> getEventsStreamByStatus(EventStatus status) {
+    final modelsStream = remoteDatasource.getEventsStreamByStatus(status);
+    return modelsStream.map(
+      (models) => models.map((model) => model.toEntity()).toList(),
+    );
+  }
+
+  @override
+  Future<void> updateEventStatus(String id, EventStatus status) async {
+    await remoteDatasource.updateEventStatus(id, status);
+  }
+
+  @override
+  Future<String> uploadImage(String filePath, String fileName) {
+    return remoteDatasource.uploadImage(filePath, fileName);
   }
 }

@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:local_happens/features/admin/presentation/pages/admin_page.dart';
+import 'package:local_happens/features/auth/domain/entities/user_role.dart';
+import 'package:local_happens/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:local_happens/features/auth/presentation/cubit/auth_state.dart';
+import 'package:local_happens/features/events/presentation/cubit/create_event_cubit.dart';
+import 'package:local_happens/features/events/presentation/pages/events_map_page.dart';
+import 'package:local_happens/injection_container.dart';
 import '../features/auth/presentation/pages/login_page.dart';
 import '../features/auth/presentation/pages/register_page.dart';
 import '../features/events/presentation/pages/events_page.dart';
@@ -26,7 +34,10 @@ class AppRouter {
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,
         path: '/events/create',
-        builder: (context, state) => const CreateEventPage(),
+        builder: (context, state) => BlocProvider<CreateEventCubit>(
+          create: (_) => sl<CreateEventCubit>(),
+          child: const CreateEventPage(),
+        ),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
@@ -51,6 +62,14 @@ class AppRouter {
           StatefulShellBranch(
             routes: [
               GoRoute(
+                path: '/map',
+                builder: (context, state) => const EventsMapPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
                 path: '/favorites',
                 builder: (context, state) => const FavoritesPage(),
               ),
@@ -61,6 +80,21 @@ class AppRouter {
               GoRoute(
                 path: '/profile',
                 builder: (context, state) => const ProfilePage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/admin',
+                builder: (context, state) => const AdminPage(),
+                redirect: (context, state) {
+                  final authState = context.read<AuthCubit>().state;
+                  if (authState is! Authenticated || authState.user.role != UserRole.admin) {
+                    return '/events';
+                  }
+                  return null;
+                },
               ),
             ],
           ),

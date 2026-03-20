@@ -12,16 +12,16 @@ class AuthInitial extends AuthState {}
 
 class AuthLoading extends AuthState {}
 
-class AuthAuthenticated extends AuthState {
+class Authenticated extends AuthState {
   final User user;
 
-  const AuthAuthenticated(this.user);
+  const Authenticated(this.user);
 
   @override
   List<Object?> get props => [user];
 }
 
-class AuthUnauthenticated extends AuthState {}
+class Unauthenticated extends AuthState {}
 
 class AuthError extends AuthState {
   final String message;
@@ -30,4 +30,9 @@ class AuthError extends AuthState {
 
   @override
   List<Object?> get props => [message];
+
+  @override
+  String toString() {
+    return 'AuthError: $message';
+  }
 }

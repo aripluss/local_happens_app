@@ -1,4 +1,7 @@
-import '../../domain/entities/event.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import 'package:local_happens/features/events/domain/entities/event.dart';
+import 'package:local_happens/features/events/domain/entities/event_status.dart';
 
 class EventModel {
   final String id;
@@ -6,12 +9,15 @@ class EventModel {
   final String description;
   final DateTime date;
   final String category;
-  final String city;
-  final String locationName;
+  final String cityId;
+  final String locationAddress;
   final double latitude;
   final double longitude;
   final String imageUrl;
-  final String createdBy;
+  final String userId;
+  final EventStatus status;
+  final String? externalUrl;
+  final int attendingCount;
 
   const EventModel({
     required this.id,
@@ -19,12 +25,15 @@ class EventModel {
     required this.description,
     required this.date,
     required this.category,
-    required this.city,
-    required this.locationName,
+    required this.cityId,
+    required this.locationAddress,
     required this.latitude,
     required this.longitude,
     required this.imageUrl,
-    required this.createdBy,
+    required this.userId,
+    required this.status,
+    this.externalUrl,
+    this.attendingCount = 0,
   });
 
   factory EventModel.fromEntity(Event event) {
@@ -34,44 +43,53 @@ class EventModel {
       description: event.description,
       date: event.date,
       category: event.category,
-      city: event.city,
-      locationName: event.locationName,
+      cityId: event.cityId,
+      locationAddress: event.locationAddress,
       latitude: event.latitude,
       longitude: event.longitude,
       imageUrl: event.imageUrl,
-      createdBy: event.createdBy,
+      userId: event.userId,
+      status: event.status,
+      externalUrl: event.externalUrl,
+      attendingCount: event.attendingCount,
     );
   }
 
-  factory EventModel.fromJson(Map<String, dynamic> json) {
+  factory EventModel.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
     return EventModel(
-      id: json['id'],
-      title: json['title'],
-      description: json['description'],
-      date: DateTime.parse(json['date']),
-      category: json['category'],
-      city: json['city'],
-      locationName: json['locationName'],
-      latitude: json['latitude'],
-      longitude: json['longitude'],
-      imageUrl: json['imageUrl'],
-      createdBy: json['createdBy'],
+      id: doc.id,
+      title: data['title'] as String,
+      description: data['description'] as String,
+      date: DateTime.parse(data['date'] as String),
+      category: data['category'] as String,
+      cityId: data['cityId'] as String,
+      locationAddress: data['locationAddress'] as String,
+      latitude: (data['latitude'] as num).toDouble(),
+      longitude: (data['longitude'] as num).toDouble(),
+      imageUrl: data['imageUrl'] as String,
+      userId: data['createdBy'] as String,
+      status: EventStatus.fromString(data['status'] as String),
+      externalUrl: data['externalUrl'] as String?,
+      attendingCount: data['attendingCount'] as int? ?? 0,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'title': title,
       'description': description,
       'date': date.toIso8601String(),
       'category': category,
-      'city': city,
-      'locationName': locationName,
+      'cityId': cityId,
+      'locationAddress': locationAddress,
       'latitude': latitude,
       'longitude': longitude,
       'imageUrl': imageUrl,
-      'createdBy': createdBy,
+      'createdBy': userId,
+      'status': status.name,
+      'externalUrl': externalUrl,
+      'attendingCount': attendingCount,
     };
   }
 
@@ -82,12 +100,15 @@ class EventModel {
       description: description,
       date: date,
       category: category,
-      city: city,
-      locationName: locationName,
+      cityId: cityId,
+      locationAddress: locationAddress,
       latitude: latitude,
       longitude: longitude,
       imageUrl: imageUrl,
-      createdBy: createdBy,
+      userId: userId,
+      status: status,
+      externalUrl: externalUrl,
+      attendingCount: attendingCount,
     );
   }
 }

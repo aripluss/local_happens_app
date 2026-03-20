@@ -1,3 +1,6 @@
 {
-    "java.configuration.updateBuildConfiguration": "automatic"
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "dart.projectSearchDepth": 5,
+    "dart.flutterSdkPath": "C:\\flutter",
+    "dart.analyzerSearchDepth": 5
 }

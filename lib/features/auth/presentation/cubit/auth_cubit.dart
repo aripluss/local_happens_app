@@ -1,7 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:local_happens/core/usecases/usecase.dart';
 import 'package:local_happens/features/auth/domain/entities/user.dart';
-import 'package:local_happens/features/auth/domain/usecases/get_current_user.dart';
+import 'package:local_happens/features/auth/domain/usecases/auth_state_changes.dart';
 import 'package:local_happens/features/auth/domain/usecases/sign_in_with_google_user.dart';
 import 'package:local_happens/features/auth/domain/usecases/sign_out_user.dart';
 import 'package:local_happens/features/auth/domain/usecases/login_user.dart';
@@ -13,31 +15,51 @@ class AuthCubit extends Cubit<AuthState> {
   final RegisterUser registerUser;
   final SignInWithGoogleUser signInWithGoogleUser;
   final SignOutUser signOutUser;
-  final GetCurrentUser getCurrentUser;
+  final AuthStateChanges authStateChanges;
+
+  StreamSubscription<User?>? _authStateSubscription;
 
   AuthCubit({
     required this.loginUser,
     required this.registerUser,
     required this.signInWithGoogleUser,
     required this.signOutUser,
-    required this.getCurrentUser,
+    required this.authStateChanges,
   }) : super(AuthInitial());
 
-  Future<void> checkAuth() async {
+  void listenAuthStateChanges() {
     emit(AuthLoading());
 
-    try {
-      final user = await getCurrentUser(NoParams());
-
+    _authStateSubscription = authStateChanges().listen((user) {
       if (user != null) {
-        emit(AuthAuthenticated(user));
+        emit(Authenticated(user));
       } else {
-        emit(AuthUnauthenticated());
+        emit(Unauthenticated());
       }
-    } catch (e) {
-      emit(AuthUnauthenticated());
-    }
+    });
   }
+
+  @override
+  Future<void> close() {
+    _authStateSubscription?.cancel();
+    return super.close();
+  }
+
+  // Future<void> checkAuth() async {
+  //   emit(AuthLoading());
+
+  //   try {
+  //     final user = await getCurrentUser(NoParams());
+
+  //     if (user != null) {
+  //       emit(AuthAuthenticated(user));
+  //     } else {
+  //       emit(AuthUnauthenticated());
+  //     }
+  //   } catch (e) {
+  //     emit(AuthUnauthenticated());
+  //   }
+  // }
 
   Future<void> login(String email, String password) async {
     emit(AuthLoading());
@@ -45,7 +67,7 @@ class AuthCubit extends Cubit<AuthState> {
       final user = await loginUser(
         LoginParams(email: email, password: password),
       );
-      emit(AuthAuthenticated(user));
+      emit(Authenticated(user));
     } catch (e) {
       emit(AuthError(e.toString()));
     }
@@ -57,7 +79,7 @@ class AuthCubit extends Cubit<AuthState> {
       final user = await registerUser(
         RegisterParams(name: name, email: email, password: password),
       );
-      emit(AuthAuthenticated(user));
+      emit(Authenticated(user));
     } catch (e) {
       emit(AuthError(e.toString()));
     }
@@ -67,7 +89,7 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthLoading());
     try {
       final user = await signInWithGoogleUser(NoParams());
-      emit(AuthAuthenticated(user));
+      emit(Authenticated(user));
     } catch (e) {
       emit(AuthError(e.toString()));
     }
@@ -77,13 +99,8 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthLoading());
     try {
       await signOutUser(NoParams());
-      emit(AuthUnauthenticated());
     } catch (e) {
       emit(AuthError(e.toString()));
     }
-  }
-
-  Future<User?> getUser() async {
-    return await getCurrentUser(NoParams());
   }
 }

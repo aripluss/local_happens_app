@@ -1,17 +1,21 @@
 import 'package:equatable/equatable.dart';
+import 'package:local_happens/features/events/domain/entities/event_status.dart';
 
 class Event extends Equatable {
   final String id;
   final String title;
   final String description;
   final String category;
-  final String city;
+  final String cityId;
   final DateTime date;
-  final String locationName;
+  final String locationAddress;
   final double latitude;
   final double longitude;
   final String imageUrl;
-  final String createdBy;
+  final String userId;
+  final EventStatus status;
+  final String? externalUrl;
+  final int attendingCount;
 
   const Event({
     required this.id,
@@ -19,12 +23,15 @@ class Event extends Equatable {
     required this.description,
     required this.date,
     required this.category,
-    required this.city,
-    required this.locationName,
+    required this.cityId,
+    required this.locationAddress,
     required this.latitude,
     required this.longitude,
     required this.imageUrl,
-    required this.createdBy,
+    required this.userId,
+    required this.status,
+    this.externalUrl,
+    this.attendingCount = 0,
   });
 
   @override
@@ -34,11 +41,14 @@ class Event extends Equatable {
     description,
     date,
     category,
-    city,
-    locationName,
+    cityId,
+    locationAddress,
     latitude,
     longitude,
     imageUrl,
-    createdBy,
+    userId,
+    status,
+    externalUrl,
+    attendingCount,
   ];
 }

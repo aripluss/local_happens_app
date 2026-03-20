@@ -23,13 +23,28 @@ class AuthException implements Exception {
       case 'invalid-email':
         return AuthException('Invalid email');
       case 'weak-password':
-        return AuthException('Weak password');
+        return AuthException('Weak password. Use at least 6 characters');
       case 'user-disabled':
         return AuthException('User disabled');
       case 'account-exists-with-different-credential':
         return AuthException('Account exists with different credential');
+      case 'channel-error':
+        return AuthException('No input data provided');
+      case 'network-request-failed':
+        return AuthException('Network request failed. Check your connection');
+      case 'too-many-requests':
+        return AuthException('Too many requests. Try again later');
+      case 'operation-not-allowed':
+        return AuthException('Operation not allowed');
+      case 'invalid-credential':
+        return AuthException('Invalid email or password');
       default:
-        return AuthException('Authentication error: ${exception.toString()}');
+        return AuthException(exception.toString());
     }
+  }
+
+  @override
+  String toString() {
+    return message;
   }
 }
