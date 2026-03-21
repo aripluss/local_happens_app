@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "130830188932",
+    "project_id": "local-happens",
+    "storage_bucket": "local-happens.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:130830188932:android:1baf753ba3f69c60295dd1",
+        "android_client_info": {
+          "package_name": "zertripfix.local_happens"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "130830188932-j3644ri7vkidmerdpqmrsslqstq908ak.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0hQIEVxsaJmhq0aT6K3yHBzagyyjHK9o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "130830188932-j3644ri7vkidmerdpqmrsslqstq908ak.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "130830188932-dpmh32gnld5khe3j7bssebas86rj33jm.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "zertripfix.localHappens"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
