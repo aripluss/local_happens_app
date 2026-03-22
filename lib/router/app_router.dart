@@ -90,7 +90,8 @@ class AppRouter {
                 builder: (context, state) => const AdminPage(),
                 redirect: (context, state) {
                   final authState = context.read<AuthCubit>().state;
-                  if (authState is! Authenticated || authState.user.role != UserRole.admin) {
+                  if (authState is! Authenticated ||
+                      authState.user.role != UserRole.admin) {
                     return '/events';
                   }
                   return null;

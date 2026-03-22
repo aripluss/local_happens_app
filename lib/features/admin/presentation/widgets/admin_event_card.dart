@@ -1,13 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:local_happens/features/auth/data/models/user_model.dart';
 import 'package:local_happens/features/events/domain/entities/event.dart';
-import 'package:local_happens/features/events/domain/entities/event_status.dart';
 import 'package:go_router/go_router.dart';
+import 'package:local_happens/features/events/presentation/widgets/event_status_badge.dart';
 
 class AdminEventCard extends StatelessWidget {
   final Event event;
+  final UserModel? organizer;
 
-  const AdminEventCard({super.key, required this.event});
+  const AdminEventCard({super.key, required this.event, this.organizer});
 
   @override
   Widget build(BuildContext context) {
@@ -80,13 +82,13 @@ class AdminEventCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Організатор: ${event.userId}',
+                    'Організатор: ${organizer?.name ?? "Unknown"}',
                     style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 8),
-                  _buildStatusBadge(),
+                  EventStatusBadge(status: event.status),
                 ],
               ),
             ),
@@ -97,58 +99,6 @@ class AdminEventCard extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildStatusBadge() {
-    Color backgroundColor;
-    Color textColor;
-    IconData iconData;
-    String statusText;
-
-    switch (event.status) {
-      case EventStatus.pending:
-        backgroundColor = Colors.orange[50]!;
-        textColor = Colors.orange[800]!;
-        iconData = Icons.schedule;
-        statusText = 'На модерації';
-        break;
-      case EventStatus.approved:
-        backgroundColor = Colors.green[50]!;
-        textColor = Colors.green[800]!;
-        iconData = Icons.check_circle_outline;
-        statusText = 'Схвалено';
-        break;
-      case EventStatus.rejected:
-        backgroundColor = Colors.red[50]!;
-        textColor = Colors.red[800]!;
-        iconData = Icons.cancel_outlined;
-        statusText = 'Відхилено';
-        break;
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: textColor.withAlpha(30)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(iconData, size: 14, color: textColor),
-          const SizedBox(width: 4),
-          Text(
-            statusText,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: textColor,
-            ),
-          ),
-        ],
       ),
     );
   }

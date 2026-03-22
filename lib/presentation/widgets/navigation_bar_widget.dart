@@ -17,31 +17,33 @@ class NavigationBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authState = context.watch<AuthCubit>().state;
-    final isAdmin = authState is Authenticated ? authState.user.role == UserRole.admin : false;
-    
+    final isAdmin = authState is Authenticated
+        ? authState.user.role == UserRole.admin
+        : false;
+
     return NavigationBar(
       selectedIndex: currentIndex,
       onDestinationSelected: onTap,
       destinations: [
         const NavigationDestination(
-          icon: Icon(Icons.event),
+          icon: Icon(Icons.home_outlined),
           label: 'Події',
         ),
         const NavigationDestination(
-          icon: Icon(Icons.map),
+          icon: Icon(Icons.map_outlined),
           label: 'Мапа',
         ),
         const NavigationDestination(
-          icon: Icon(Icons.favorite),
+          icon: Icon(Icons.favorite_border),
           label: 'Обране',
         ),
         const NavigationDestination(
-          icon: Icon(Icons.person),
+          icon: Icon(Icons.person_outline_outlined),
           label: 'Профіль',
         ),
         if (isAdmin)
           NavigationDestination(
-            icon: Icon(Icons.admin_panel_settings),
+            icon: Icon(Icons.shield_outlined),
             label: 'Адмін',
           ),
       ],

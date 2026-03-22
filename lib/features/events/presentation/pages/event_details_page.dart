@@ -4,12 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart';
+import 'package:local_happens/core/utils/date_formatter.dart';
 import 'package:local_happens/features/admin/presentation/cubit/admin_cubit.dart';
 import 'package:local_happens/features/auth/domain/entities/user_role.dart';
 import 'package:local_happens/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:local_happens/features/auth/presentation/cubit/auth_state.dart';
 import 'package:local_happens/features/events/domain/entities/event_status.dart';
+import 'package:local_happens/features/favorites/presentation/cubit/favorites_cubit.dart';
+import 'package:local_happens/features/favorites/presentation/cubit/favorites_state.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:local_happens/features/events/presentation/cubit/event_details_cubit.dart';
 import 'package:local_happens/features/events/presentation/cubit/event_details_state.dart';
@@ -26,11 +28,10 @@ class EventDetailsPage extends StatefulWidget {
 }
 
 class _EventDetailsPageState extends State<EventDetailsPage> {
-
   @override
   void initState() {
     super.initState();
-    initializeDateFormatting('uk_UA', null);
+    context.read<FavoritesCubit>().checkIsFavorite(widget.eventId);
   }
 
   @override
@@ -57,7 +58,6 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
 
   Widget _buildContent(BuildContext context, EventUiModel uiModel) {
     final event = uiModel.event;
-    final dateFormat = DateFormat("EEEE, d MMMM yyyy", 'uk_UA');
     final timeFormat = DateFormat("HH:mm");
     final authState = context.read<AuthCubit>().state;
     final isAdmin = authState is Authenticated
@@ -132,7 +132,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                     const SizedBox(height: 16),
 
                     Text(
-                      '${event.category}: ${event.title}',
+                      event.title,
                       style: const TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -143,9 +143,10 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
 
                     _buildInfoCard(
                       icon: Icons.calendar_today_outlined,
-                      title: dateFormat.format(event.date).capitalize(),
+                      title: formatDateWithWeekday(event.date),
                       subtitle: timeFormat.format(event.date),
                     ),
+
                     const SizedBox(height: 12),
 
                     _buildInfoCard(
@@ -351,13 +352,49 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
           ),
         ),
 
+        // Favorite button
         Positioned(
           top: MediaQuery.of(context).padding.top + 10,
           right: 20,
-          child: _buildFloatingButton(
-            icon: Icons.favorite_border,
-            onPressed: () {
-              // Toggle favorite
+          child: BlocConsumer<FavoritesCubit, FavoritesState>(
+            listener: (context, state) {
+              if (state is FavoritesError) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(state.message)));
+              }
+            },
+            builder: (context, state) {
+              if (state is FavoritesLoading) {
+                return _buildFloatingButton(
+                  icon: Icons.favorite_border,
+                  iconColor: Colors.grey,
+                  onPressed: () {}, // кнопка неактивна
+                );
+              }
+
+              final authState = context.read<AuthCubit>().state;
+              final isAuthenticated = authState is Authenticated;
+              final isFavorite =
+                  isAuthenticated && state.favoriteIds.contains(widget.eventId);
+
+              return _buildFloatingButton(
+                icon: isFavorite ? Icons.favorite : Icons.favorite_border,
+                iconColor: isFavorite ? Colors.redAccent : Colors.black87,
+                onPressed: () {
+                  if (!isAuthenticated) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Увійдіть, щоб мати можливість додавати в "Обране"',
+                        ),
+                      ),
+                    );
+                    return;
+                  }
+                  context.read<FavoritesCubit>().toggleFavorite(widget.eventId);
+                },
+              );
             },
           ),
         ),
@@ -449,6 +486,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
 
   Widget _buildFloatingButton({
     required IconData icon,
+    Color iconColor = Colors.black87,
     required VoidCallback onPressed,
   }) {
     return Container(
@@ -460,7 +498,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
         ],
       ),
       child: IconButton(
-        icon: Icon(icon, color: Colors.black87),
+        icon: Icon(icon, color: iconColor),
         onPressed: onPressed,
       ),
     );
