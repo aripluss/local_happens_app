@@ -96,6 +96,7 @@ Future<void> init() async {
       getEventsByStatus: sl(),
       changeEventStatusUseCase: sl(),
       getUsersByIdsUseCase: sl(),
+      getCitiesByIdsUseCase: sl(),
     ),
   );
   sl.registerLazySingleton(() => GetEventsByStatus(sl()));

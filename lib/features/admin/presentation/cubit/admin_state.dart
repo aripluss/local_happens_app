@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:local_happens/features/auth/data/models/user_model.dart';
-import 'package:local_happens/features/events/domain/entities/event.dart';
+import 'package:local_happens/features/events/presentation/models/event_ui_model.dart';
 
 abstract class AdminState extends Equatable {
   const AdminState();
@@ -14,32 +14,29 @@ class AdminInitial extends AdminState {}
 class AdminLoading extends AdminState {}
 
 class AdminLoaded extends AdminState {
-  final List<Event> pendingEvents;
-  final List<Event> approvedEvents;
-  final List<Event> rejectedEvents;
-  final Map<String, UserModel> usersMap;
+  final List<EventUiModel> pendingEvents;
+  final List<EventUiModel> approvedEvents;
+  final List<EventUiModel> rejectedEvents;
 
   const AdminLoaded({
     required this.pendingEvents,
     required this.approvedEvents,
     required this.rejectedEvents,
-    this.usersMap = const {},
   });
 
   @override
   List<Object?> get props => [pendingEvents, approvedEvents, rejectedEvents];
 
   AdminLoaded copyWith({
-    List<Event>? pendingEvents,
-    List<Event>? approvedEvents,
-    List<Event>? rejectedEvents,
+    List<EventUiModel>? pendingEvents,
+    List<EventUiModel>? approvedEvents,
+    List<EventUiModel>? rejectedEvents,
     Map<String, UserModel>? usersMap,
   }) {
     return AdminLoaded(
       pendingEvents: pendingEvents ?? this.pendingEvents,
       approvedEvents: approvedEvents ?? this.approvedEvents,
       rejectedEvents: rejectedEvents ?? this.rejectedEvents,
-      usersMap: usersMap ?? this.usersMap,
     );
   }
 }
