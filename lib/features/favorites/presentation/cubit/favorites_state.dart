@@ -23,8 +23,7 @@ class FavoritesLoading extends FavoritesState {
 }
 
 class FavoritesLoaded extends FavoritesState {
-  const FavoritesLoaded(List<Event> favorites, {Set<String>? favoriteIds})
-    : super(favorites: favorites, favoriteIds: favoriteIds ?? const {});
+  const FavoritesLoaded({required super.favorites, required super.favoriteIds});
 }
 
 class FavoritesError extends FavoritesState {

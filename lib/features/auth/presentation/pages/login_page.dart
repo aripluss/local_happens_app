@@ -17,6 +17,15 @@ class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      context.read<AuthCubit>().login(
+        emailController.text,
+        passwordController.text,
+      );
+    }
+  }
+
   @override
   void dispose() {
     emailController.dispose();
@@ -50,6 +59,8 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   TextFormField(
                     controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
                     decoration: const InputDecoration(labelText: 'Email'),
                     validator: Validators.validateEmail,
                   ),
@@ -58,22 +69,20 @@ class _LoginPageState extends State<LoginPage> {
 
                   TextFormField(
                     controller: passwordController,
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.go,
                     obscureText: true,
                     decoration: const InputDecoration(labelText: 'Password'),
                     validator: Validators.validatePassword,
+                    onFieldSubmitted: (_) {
+                      _submitForm();
+                    },
                   ),
 
                   const SizedBox(height: 20),
 
                   ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        context.read<AuthCubit>().login(
-                          emailController.text,
-                          passwordController.text,
-                        );
-                      }
-                    },
+                    onPressed: _submitForm,
                     child: const Text('Login'),
                   ),
 

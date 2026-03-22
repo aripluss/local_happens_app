@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:local_happens/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:local_happens/features/auth/presentation/cubit/auth_state.dart';
 import 'package:local_happens/features/events/domain/entities/event.dart';
+import 'package:local_happens/features/events/presentation/widgets/event_status_badge.dart';
 import 'package:local_happens/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:local_happens/features/profile/presentation/cubit/profile_state.dart';
 
@@ -85,7 +86,13 @@ class _EventCardWidget extends StatelessWidget {
           },
         ),
         title: Text(event.title),
-        subtitle: Text(event.status.name),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 4),
+            EventStatusBadge(status: event.status),
+          ],
+        ),
       ),
     );
   }

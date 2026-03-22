@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:local_happens/core/utils/date_formatter.dart';
 import 'package:local_happens/features/admin/presentation/cubit/admin_cubit.dart';
 import 'package:local_happens/features/auth/domain/entities/user_role.dart';
 import 'package:local_happens/features/auth/presentation/cubit/auth_cubit.dart';
@@ -57,7 +58,6 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
 
   Widget _buildContent(BuildContext context, EventUiModel uiModel) {
     final event = uiModel.event;
-    final dateFormat = DateFormat("EEEE, d MMMM yyyy", 'uk_UA');
     final timeFormat = DateFormat("HH:mm");
     final authState = context.read<AuthCubit>().state;
     final isAdmin = authState is Authenticated
@@ -132,7 +132,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                     const SizedBox(height: 16),
 
                     Text(
-                      '${event.category}: ${event.title}',
+                      event.title,
                       style: const TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -143,9 +143,10 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
 
                     _buildInfoCard(
                       icon: Icons.calendar_today_outlined,
-                      title: dateFormat.format(event.date).capitalize(),
+                      title: formatDateWithWeekday(event.date),
                       subtitle: timeFormat.format(event.date),
                     ),
+
                     const SizedBox(height: 12),
 
                     _buildInfoCard(

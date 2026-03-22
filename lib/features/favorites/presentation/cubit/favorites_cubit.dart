@@ -25,7 +25,7 @@ class FavoritesCubit extends Cubit<FavoritesState> {
       final favorites = await getFavoritesUseCase(NoParams());
       emit(
         FavoritesLoaded(
-          favorites,
+          favorites: favorites,
           favoriteIds: favorites.map((e) => e.id).toSet(),
         ),
       );
@@ -40,68 +40,65 @@ class FavoritesCubit extends Cubit<FavoritesState> {
     }
   }
 
-  // Future<void> addFavoriteEvent(String eventId) async {
-  //   try {
-  //     await addFavoriteUseCase(AddFavoriteParams(eventId: eventId));
-  //     await loadFavorites();
-  //   } catch (e) {
-  //     emit(FavoritesError(e.toString()));
-  //   }
-  // }
-  // Future<void> addFavoriteEvent(String eventId) async {
-  //   try {
-  //     final updatedIds = Set<String>.from(state.favoriteIds)..add(eventId);
-
-  //     emit(FavoritesLoaded(state.favorites, favoriteIds: updatedIds));
-
-  //     await addFavoriteUseCase(AddFavoriteParams(eventId: eventId));
-  //   } catch (e) {
-  //     emit(FavoritesError(e.toString()));
-  //   }
-  // }
-
   Future<void> addFavoriteEvent(String eventId) async {
+    if (state is! FavoritesLoaded) return;
+
+    final currentState = state as FavoritesLoaded;
+
     try {
+      final updatedIds = Set<String>.from(currentState.favoriteIds)
+        ..add(eventId);
+
+      // локальне оновлення UI миттєво
+      emit(
+        FavoritesLoaded(
+          favorites: currentState.favorites,
+          favoriteIds: updatedIds,
+        ),
+      );
+
+      // запит на сервер
       await addFavoriteUseCase(AddFavoriteParams(eventId: eventId));
-      await loadFavorites();
+
+      // оновлення всього списку у фоні
+      final favorites = await getFavoritesUseCase(NoParams());
+      emit(
+        FavoritesLoaded(
+          favorites: favorites,
+          favoriteIds: favorites.map((e) => e.id).toSet(),
+        ),
+      );
     } catch (e) {
       emit(
         FavoritesError(
           e.toString(),
-          favorites: state.favorites,
-          favoriteIds: state.favoriteIds,
+          favorites: currentState.favorites,
+          favoriteIds: currentState.favoriteIds,
         ),
       );
     }
   }
 
-  // Future<void> removeFavoriteEvent(String eventId) async {
-  //   try {
-  //     // локальне видалення
-  //     final updatedFavorites = state.favorites
-  //         .where((e) => e.id != eventId)
-  //         .toList();
-  //     final updatedIds = Set<String>.from(state.favoriteIds)..remove(eventId);
-
-  //     emit(FavoritesLoaded(updatedFavorites, favoriteIds: updatedIds));
-
-  //     // видалення на сервері
-  //     await removeFavoriteUseCase(RemoveFavoriteParams(eventId: eventId));
-  //   } catch (e) {
-  //     emit(
-  //       FavoritesError(
-  //         e.toString(),
-  //         favorites: state.favorites,
-  //         favoriteIds: state.favoriteIds,
-  //       ),
-  //     );
-  //   }
-  // }
-
   Future<void> removeFavoriteEvent(String eventId) async {
+    if (state is! FavoritesLoaded) return;
+
+    final currentState = state as FavoritesLoaded;
+
     try {
+      // локальне видалення
+      final updatedFavorites = currentState.favorites
+          .where((e) => e.id != eventId)
+          .toList();
+
+      final updatedIds = Set<String>.from(currentState.favoriteIds)
+        ..remove(eventId);
+
+      emit(
+        FavoritesLoaded(favorites: updatedFavorites, favoriteIds: updatedIds),
+      );
+
+      // видалення на сервері
       await removeFavoriteUseCase(RemoveFavoriteParams(eventId: eventId));
-      await loadFavorites();
     } catch (e) {
       emit(
         FavoritesError(
@@ -134,7 +131,9 @@ class FavoritesCubit extends Cubit<FavoritesState> {
 
       if (!isClosed && isFavorite) {
         final updatedIds = Set<String>.from(state.favoriteIds)..add(eventId);
-        emit(FavoritesLoaded(state.favorites, favoriteIds: updatedIds));
+        emit(
+          FavoritesLoaded(favorites: state.favorites, favoriteIds: updatedIds),
+        );
       }
 
       return isFavorite;

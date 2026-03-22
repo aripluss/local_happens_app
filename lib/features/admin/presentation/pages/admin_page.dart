@@ -79,15 +79,18 @@ class _AdminPageState extends State<AdminPage> {
 
   Widget _buildEventList(List<Event> events) {
     if (events.isEmpty) {
-      return const Center(
-        child: Text('Немає подій'),
-      );
+      return const Center(child: Text('Немає подій'));
     }
+
+    final cubit = context.read<AdminCubit>();
+
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: events.length,
       itemBuilder: (context, index) {
-        return AdminEventCard(event: events[index]);
+        final event = events[index];
+        final user = cubit.getUser(event.userId);
+        return AdminEventCard(event: events[index], organizer: user);
       },
     );
   }

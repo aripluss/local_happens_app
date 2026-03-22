@@ -18,6 +18,16 @@ class _RegisterPageState extends State<RegisterPage> {
   final passwordController = TextEditingController();
   final nameController = TextEditingController();
 
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      context.read<AuthCubit>().register(
+        nameController.text.trim(),
+        emailController.text.trim(),
+        passwordController.text,
+      );
+    }
+  }
+
   @override
   void dispose() {
     emailController.dispose();
@@ -52,6 +62,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 children: [
                   TextFormField(
                     controller: nameController,
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.next,
                     decoration: const InputDecoration(labelText: 'Name'),
                     validator: Validators.validateName,
                   ),
@@ -60,6 +72,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
                   TextFormField(
                     controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
                     decoration: const InputDecoration(labelText: 'Email'),
                     validator: Validators.validateEmail,
                   ),
@@ -68,23 +82,20 @@ class _RegisterPageState extends State<RegisterPage> {
 
                   TextFormField(
                     controller: passwordController,
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.go,
                     obscureText: true,
                     decoration: const InputDecoration(labelText: 'Password'),
                     validator: Validators.validatePassword,
+                    onFieldSubmitted: (_) {
+                      _submitForm();
+                    },
                   ),
 
                   const SizedBox(height: 20),
 
                   ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        context.read<AuthCubit>().register(
-                          nameController.text.trim(),
-                          emailController.text.trim(),
-                          passwordController.text,
-                        );
-                      }
-                    },
+                    onPressed: _submitForm,
                     child: const Text('Register'),
                   ),
 

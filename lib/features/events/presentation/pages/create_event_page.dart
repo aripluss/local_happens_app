@@ -147,6 +147,8 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   // ── Title ──────────────────────────────────────────────
                   TextFormField(
                     controller: _titleController,
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.next,
                     decoration: const InputDecoration(
                       labelText: 'Назва події *',
                     ),
@@ -159,6 +161,8 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   // ── Description ────────────────────────────────────────
                   TextFormField(
                     controller: _descriptionController,
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.next,
                     decoration: const InputDecoration(labelText: 'Опис *'),
                     maxLines: 4,
                     validator: (v) => (v == null || v.trim().isEmpty)

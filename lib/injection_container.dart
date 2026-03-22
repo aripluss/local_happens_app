@@ -92,7 +92,11 @@ Future<void> init() async {
 
   // Features - Admin
   sl.registerFactory(
-    () => AdminCubit(getEventsByStatus: sl(), changeEventStatusUseCase: sl()),
+    () => AdminCubit(
+      getEventsByStatus: sl(),
+      changeEventStatusUseCase: sl(),
+      getUsersByIdsUseCase: sl(),
+    ),
   );
   sl.registerLazySingleton(() => GetEventsByStatus(sl()));
   sl.registerLazySingleton(() => ChangeEventStatus(sl()));
@@ -177,10 +181,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => RemoveFavorite(sl()));
   sl.registerLazySingleton(() => IsFavorite(sl()));
   sl.registerLazySingleton<FavoriteRepository>(
-    () => FavoriteRepositoryImpl(
-      firestore: sl(),
-      firebaseAuth: sl(),
-    ),
+    () => FavoriteRepositoryImpl(firestore: sl(), firebaseAuth: sl()),
   );
 
   // Features - Profile
