@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:local_happens/features/auth/data/models/user_model.dart';
 import 'package:local_happens/features/events/domain/entities/event.dart';
 
 abstract class AdminState extends Equatable {
@@ -16,11 +17,13 @@ class AdminLoaded extends AdminState {
   final List<Event> pendingEvents;
   final List<Event> approvedEvents;
   final List<Event> rejectedEvents;
+  final Map<String, UserModel> usersMap;
 
   const AdminLoaded({
     required this.pendingEvents,
     required this.approvedEvents,
     required this.rejectedEvents,
+    this.usersMap = const {},
   });
 
   @override
@@ -30,11 +33,13 @@ class AdminLoaded extends AdminState {
     List<Event>? pendingEvents,
     List<Event>? approvedEvents,
     List<Event>? rejectedEvents,
+    Map<String, UserModel>? usersMap,
   }) {
     return AdminLoaded(
       pendingEvents: pendingEvents ?? this.pendingEvents,
       approvedEvents: approvedEvents ?? this.approvedEvents,
       rejectedEvents: rejectedEvents ?? this.rejectedEvents,
+      usersMap: usersMap ?? this.usersMap,
     );
   }
 }

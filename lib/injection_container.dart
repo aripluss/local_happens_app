@@ -43,6 +43,9 @@ import 'package:local_happens/features/events/presentation/cubit/events_cubit.da
 import 'package:local_happens/features/favorites/data/repositories/favorite_repository_impl.dart';
 import 'package:local_happens/features/favorites/domain/repositories/favorite_repository.dart';
 import 'package:local_happens/features/favorites/domain/usecases/add_favorite.dart';
+import 'package:local_happens/features/favorites/domain/usecases/get_favorites.dart';
+import 'package:local_happens/features/favorites/domain/usecases/is_favorite.dart';
+import 'package:local_happens/features/favorites/domain/usecases/remove_favorite.dart';
 import 'package:local_happens/features/favorites/presentation/cubit/favorites_cubit.dart';
 import 'package:local_happens/features/profile/presentation/cubit/profile_cubit.dart';
 
@@ -89,7 +92,11 @@ Future<void> init() async {
 
   // Features - Admin
   sl.registerFactory(
-    () => AdminCubit(getEventsByStatus: sl(), changeEventStatusUseCase: sl()),
+    () => AdminCubit(
+      getEventsByStatus: sl(),
+      changeEventStatusUseCase: sl(),
+      getUsersByIdsUseCase: sl(),
+    ),
   );
   sl.registerLazySingleton(() => GetEventsByStatus(sl()));
   sl.registerLazySingleton(() => ChangeEventStatus(sl()));
@@ -161,9 +168,21 @@ Future<void> init() async {
   sl.registerLazySingleton(() => UploadEventImage(sl()));
 
   // Features - Favorites
-  sl.registerFactory(() => FavoritesCubit(addFavoriteUseCase: sl()));
+  sl.registerFactory(
+    () => FavoritesCubit(
+      getFavoritesUseCase: sl(),
+      addFavoriteUseCase: sl(),
+      removeFavoriteUseCase: sl(),
+      isFavoriteUseCase: sl(),
+    ),
+  );
+  sl.registerLazySingleton(() => GetFavorites(sl()));
   sl.registerLazySingleton(() => AddFavorite(sl()));
-  sl.registerLazySingleton<FavoriteRepository>(() => FavoriteRepositoryImpl());
+  sl.registerLazySingleton(() => RemoveFavorite(sl()));
+  sl.registerLazySingleton(() => IsFavorite(sl()));
+  sl.registerLazySingleton<FavoriteRepository>(
+    () => FavoriteRepositoryImpl(firestore: sl(), firebaseAuth: sl()),
+  );
 
   // Features - Profile
   sl.registerFactory(() => ProfileCubit(sl()));

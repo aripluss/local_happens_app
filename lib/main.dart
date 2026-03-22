@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:local_happens/features/admin/presentation/cubit/admin_cubit.dart';
 import 'package:local_happens/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:local_happens/firebase_options.dart';
@@ -15,6 +16,8 @@ import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platf
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await initializeDateFormatting('uk_UA', null);
 
   final GoogleMapsFlutterPlatform mapsImplementation =
       GoogleMapsFlutterPlatform.instance;

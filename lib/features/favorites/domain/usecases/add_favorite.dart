@@ -1,5 +1,5 @@
-import '../../../../core/usecases/usecase.dart';
-import '../repositories/favorite_repository.dart';
+import 'package:local_happens/core/usecases/usecase.dart';
+import 'package:local_happens/features/favorites/domain/repositories/favorite_repository.dart';
 
 class AddFavorite implements UseCase<void, AddFavoriteParams> {
   final FavoriteRepository repository;
@@ -7,8 +7,8 @@ class AddFavorite implements UseCase<void, AddFavoriteParams> {
   AddFavorite(this.repository);
 
   @override
-  Future<void> call(AddFavoriteParams params) async {
-    return await repository.addFavorite(params.eventId);
+  Future<void> call(AddFavoriteParams params) {
+    return repository.addFavorite(params.eventId);
   }
 }
 

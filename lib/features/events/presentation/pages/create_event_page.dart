@@ -30,7 +30,6 @@ class _CreateEventPageState extends State<CreateEventPage> {
   String? _selectedCategory;
   XFile? _selectedImage;
 
-
   double? _lat;
   double? _lng;
   String? _resolvedCityName;
@@ -38,9 +37,12 @@ class _CreateEventPageState extends State<CreateEventPage> {
   static const List<String> _categories = [
     'Музика',
     'Спорт',
-    'Мистецтво',
     'Їжа',
+    'Мистецтво',
     'Технології',
+    'Освіта',
+    'Розваги',
+    'Бізнес',
     'Інше',
   ];
 
@@ -71,13 +73,14 @@ class _CreateEventPageState extends State<CreateEventPage> {
             context.pop();
           }
           if (state is CreateEventError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
           }
         },
         builder: (context, state) {
-          final isLoading = state is CreateEventLocationLoading ||
+          final isLoading =
+              state is CreateEventLocationLoading ||
               state is CreateEventSubmitting;
 
           return SingleChildScrollView(
@@ -144,19 +147,27 @@ class _CreateEventPageState extends State<CreateEventPage> {
                   // ── Title ──────────────────────────────────────────────
                   TextFormField(
                     controller: _titleController,
-                    decoration: const InputDecoration(labelText: 'Назва події *'),
-                    validator: (v) =>
-                        (v == null || v.trim().isEmpty) ? 'Обов\'язкове поле' : null,
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.next,
+                    decoration: const InputDecoration(
+                      labelText: 'Назва події *',
+                    ),
+                    validator: (v) => (v == null || v.trim().isEmpty)
+                        ? 'Обов\'язкове поле'
+                        : null,
                   ),
                   const SizedBox(height: 12),
 
                   // ── Description ────────────────────────────────────────
                   TextFormField(
                     controller: _descriptionController,
+                    keyboardType: TextInputType.text,
+                    textInputAction: TextInputAction.next,
                     decoration: const InputDecoration(labelText: 'Опис *'),
                     maxLines: 4,
-                    validator: (v) =>
-                        (v == null || v.trim().isEmpty) ? 'Обов\'язкове поле' : null,
+                    validator: (v) => (v == null || v.trim().isEmpty)
+                        ? 'Обов\'язкове поле'
+                        : null,
                   ),
                   const SizedBox(height: 12),
 
@@ -254,10 +265,9 @@ class _CreateEventPageState extends State<CreateEventPage> {
                         helperText:
                             'Заповнено автоматично. Ви можете відредагувати.',
                       ),
-                      validator: (v) =>
-                          (v == null || v.trim().isEmpty)
-                              ? 'Обов\'язкове поле'
-                              : null,
+                      validator: (v) => (v == null || v.trim().isEmpty)
+                          ? 'Обов\'язкове поле'
+                          : null,
                     ),
                   ],
 
@@ -319,9 +329,10 @@ class _CreateEventPageState extends State<CreateEventPage> {
     );
 
     if (picked != null && mounted) {
-      context
-          .read<CreateEventCubit>()
-          .resolveLocationFromCoords(picked.latitude, picked.longitude);
+      context.read<CreateEventCubit>().resolveLocationFromCoords(
+        picked.latitude,
+        picked.longitude,
+      );
     }
   }
 
@@ -347,9 +358,9 @@ class _CreateEventPageState extends State<CreateEventPage> {
     if (!_formKey.currentState!.validate()) return;
 
     if (_selectedDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Будь ласка, оберіть дату')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Будь ласка, оберіть дату')));
       return;
     }
 
@@ -367,18 +378,18 @@ class _CreateEventPageState extends State<CreateEventPage> {
         : date;
 
     context.read<CreateEventCubit>().submitEvent(
-          title: _titleController.text.trim(),
-          description: _descriptionController.text.trim(),
-          category: _selectedCategory!,
-          date: eventDate,
-          lat: _lat!,
-          lng: _lng!,
-          address: _addressController.text.trim(),
-          cityName: _resolvedCityName!,
-          link: _linkController.text.trim(),
-          userId: (context.read<AuthCubit>().state as Authenticated).user.id,
-          imageFilePath: _selectedImage?.path,
-        );
+      title: _titleController.text.trim(),
+      description: _descriptionController.text.trim(),
+      category: _selectedCategory!,
+      date: eventDate,
+      lat: _lat!,
+      lng: _lng!,
+      address: _addressController.text.trim(),
+      cityName: _resolvedCityName!,
+      link: _linkController.text.trim(),
+      userId: (context.read<AuthCubit>().state as Authenticated).user.id,
+      imageFilePath: _selectedImage?.path,
+    );
   }
 
   String _formatDate(DateTime date) {
@@ -409,10 +420,12 @@ class _DashedBorderPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     final path = Path()
-      ..addRRect(RRect.fromRectAndRadius(
-        Rect.fromLTWH(0, 0, size.width, size.height),
-        Radius.circular(borderRadius),
-      ));
+      ..addRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(0, 0, size.width, size.height),
+          Radius.circular(borderRadius),
+        ),
+      );
 
     final dashPath = Path();
     for (final metric in path.computeMetrics()) {

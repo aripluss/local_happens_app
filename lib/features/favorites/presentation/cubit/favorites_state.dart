@@ -1,31 +1,36 @@
 import 'package:equatable/equatable.dart';
-import '../../../events/domain/entities/event.dart';
+import 'package:local_happens/features/events/domain/entities/event.dart';
 
 abstract class FavoritesState extends Equatable {
-  const FavoritesState();
+  final List<Event> favorites;
+  final Set<String> favoriteIds;
+
+  const FavoritesState({
+    this.favorites = const [],
+    this.favoriteIds = const {},
+  });
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [favorites, favoriteIds];
 }
 
-class FavoritesInitial extends FavoritesState {}
+class FavoritesInitial extends FavoritesState {
+  const FavoritesInitial();
+}
 
-class FavoritesLoading extends FavoritesState {}
+class FavoritesLoading extends FavoritesState {
+  const FavoritesLoading({super.favorites, super.favoriteIds});
+}
 
 class FavoritesLoaded extends FavoritesState {
-  final List<Event> favorites;
-
-  const FavoritesLoaded(this.favorites);
-
-  @override
-  List<Object> get props => [favorites];
+  const FavoritesLoaded({required super.favorites, required super.favoriteIds});
 }
 
 class FavoritesError extends FavoritesState {
   final String message;
 
-  const FavoritesError(this.message);
+  const FavoritesError(this.message, {super.favorites, super.favoriteIds});
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => [message, favorites, favoriteIds];
 }
