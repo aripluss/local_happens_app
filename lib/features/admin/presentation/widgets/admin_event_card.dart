@@ -1,21 +1,19 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:local_happens/features/auth/data/models/user_model.dart';
-import 'package:local_happens/features/events/domain/entities/event.dart';
 import 'package:go_router/go_router.dart';
+import 'package:local_happens/features/events/presentation/models/event_ui_model.dart';
 import 'package:local_happens/features/events/presentation/widgets/event_status_badge.dart';
 
 class AdminEventCard extends StatelessWidget {
-  final Event event;
-  final UserModel? organizer;
+  final EventUiModel eventModel;
 
-  const AdminEventCard({super.key, required this.event, this.organizer});
+  const AdminEventCard({super.key, required this.eventModel});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.push('/events/${event.id}');
+        context.push('/events/${eventModel.event.id}');
       },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -37,7 +35,7 @@ class AdminEventCard extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: CachedNetworkImage(
-                imageUrl: event.imageUrl,
+                imageUrl: eventModel.event.imageUrl,
                 width: 80,
                 height: 80,
                 fit: BoxFit.cover,
@@ -65,7 +63,7 @@ class AdminEventCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    event.title,
+                    eventModel.event.title,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -75,20 +73,27 @@ class AdminEventCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${event.cityId} • ${event.category}',
+                    'Місто: ${eventModel.cityName}',
                     style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Організатор: ${organizer?.name ?? "Unknown"}',
+                    'Категорія: ${eventModel.event.category}',
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Організатор: ${eventModel.userName}',
                     style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 8),
-                  EventStatusBadge(status: event.status),
+                  EventStatusBadge(status: eventModel.event.status),
                 ],
               ),
             ),

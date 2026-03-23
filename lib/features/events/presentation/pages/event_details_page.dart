@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -123,7 +124,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                         ),
                         const SizedBox(width: 12),
                         _buildTag(
-                          label: '${event.attendingCount} планують прийти',
+                          label: '${event.attendeeIds.length} планують прийти',
                           color: Colors.grey[100]!,
                           textColor: Colors.black87,
                         ),
@@ -240,36 +241,90 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                           ),
                         ),
                         const SizedBox(width: 12),
+
                         Expanded(
-                          child: OutlinedButton(
-                            onPressed: () {
-                              // Attendance action
-                            },
-                            style: OutlinedButton.styleFrom(
-                              side: BorderSide(color: Colors.grey[300]!),
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.person_add_outlined,
-                                  size: 20,
-                                  color: Colors.black87,
-                                ),
-                                SizedBox(width: 4),
-                                Text(
-                                  'Я буду!',
-                                  style: TextStyle(
-                                    color: Colors.black87,
-                                    fontSize: 16,
+                          child: BlocBuilder<EventDetailsCubit, EventDetailsState>(
+                            builder: (context, state) {
+                              final authState = context.read<AuthCubit>().state;
+
+                              if (state is EventDetailsLoaded) {
+                                final event = state.event.event;
+
+                                final currentUserId = authState is Authenticated
+                                    ? authState.user.id
+                                    : null;
+
+                                final isAttending =
+                                    currentUserId != null &&
+                                    event.attendeeIds.contains(currentUserId);
+
+                                return OutlinedButton(
+                                  onPressed: authState is Authenticated
+                                      ? () {
+                                          context
+                                              .read<EventDetailsCubit>()
+                                              .toggleAttendance(
+                                                event.id,
+                                                currentUserId!,
+                                              );
+
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                isAttending
+                                                    ? 'Ви більше не плануєте йти'
+                                                    : 'Гарно провести час!',
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      : () {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Спочатку увійдіть в акаунт',
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(color: Colors.grey[300]!),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 16,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        isAttending
+                                            ? Icons.person_remove_outlined
+                                            : Icons.person_add_outlined,
+                                        size: 20,
+                                        color: Colors.black87,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        isAttending ? 'Передумав' : 'Я буду!',
+                                        style: const TextStyle(
+                                          color: Colors.black87,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
+
+                              return const SizedBox.shrink();
+                            },
                           ),
                         ),
                       ],
@@ -382,14 +437,18 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                 icon: isFavorite ? Icons.favorite : Icons.favorite_border,
                 iconColor: isFavorite ? Colors.redAccent : Colors.black87,
                 onPressed: () {
-                  if (!isAuthenticated) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Увійдіть, щоб мати можливість додавати в "Обране"',
+                  final user = FirebaseAuth.instance.currentUser;
+                  // через if (!isAuthenticated)... не працює після логауту
+                  if (user == null) {
+                    ScaffoldMessenger.of(context)
+                      ..clearSnackBars()
+                      ..showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Увійдіть, щоб мати можливість додавати в "Обране"',
+                          ),
                         ),
-                      ),
-                    );
+                      );
                     return;
                   }
                   context.read<FavoritesCubit>().toggleFavorite(widget.eventId);

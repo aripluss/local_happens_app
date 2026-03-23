@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "130830188932-t894u87c3lo754u88v1rhgk6n1jplsce.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "zertripfix.local_happens",
+            "certificate_hash": "df6a1f20112d92b3994ece3fe9460f1ebbda6f4d"
+          }
+        },
+        {
           "client_id": "130830188932-j3644ri7vkidmerdpqmrsslqstq908ak.apps.googleusercontent.com",
           "client_type": 3
         }

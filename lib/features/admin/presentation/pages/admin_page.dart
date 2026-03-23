@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:local_happens/features/admin/presentation/cubit/admin_cubit.dart';
 import 'package:local_happens/features/admin/presentation/cubit/admin_state.dart';
 import 'package:local_happens/features/admin/presentation/widgets/admin_event_card.dart';
-import 'package:local_happens/features/events/domain/entities/event.dart';
+import 'package:local_happens/features/events/presentation/models/event_ui_model.dart';
 
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
@@ -77,21 +77,15 @@ class _AdminPageState extends State<AdminPage> {
     );
   }
 
-  Widget _buildEventList(List<Event> events) {
+  Widget _buildEventList(List<EventUiModel> events) {
     if (events.isEmpty) {
       return const Center(child: Text('Немає подій'));
     }
 
-    final cubit = context.read<AdminCubit>();
-
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: events.length,
-      itemBuilder: (context, index) {
-        final event = events[index];
-        final user = cubit.getUser(event.userId);
-        return AdminEventCard(event: events[index], organizer: user);
-      },
+      itemBuilder: (context, index) => AdminEventCard(eventModel: events[index]),
     );
   }
 }

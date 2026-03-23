@@ -19,7 +19,11 @@ class _EventsPageState extends State<EventsPage> {
   final TextEditingController _searchController = TextEditingController();
 
   final List<Map<String, dynamic>> _categories = [
-    {'name': 'Усі', 'icon': Icons.local_fire_department, 'color': Colors.orange},
+    {
+      'name': 'Усі',
+      'icon': Icons.local_fire_department,
+      'color': Colors.orange,
+    },
     {'name': 'Музика', 'icon': Icons.music_note, 'color': Colors.blue},
     {'name': 'Спорт', 'icon': Icons.bolt, 'color': Colors.amber},
     {'name': 'Їжа', 'icon': Icons.restaurant, 'color': Colors.red},
@@ -247,7 +251,8 @@ class _EventsPageState extends State<EventsPage> {
                   builder: (context, state) {
                     if (state is EventsLoading) {
                       return const Center(child: CircularProgressIndicator());
-                    } else if (state is EventsLoaded && state.events.isNotEmpty) {
+                    } else if (state is EventsLoaded &&
+                        state.events.isNotEmpty) {
                       return GridView.builder(
                         padding: const EdgeInsets.only(bottom: 20),
                         gridDelegate:

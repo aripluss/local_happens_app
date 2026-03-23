@@ -37,6 +37,8 @@ import 'package:local_happens/features/events/domain/usecases/get_users_by_ids.d
 import 'package:local_happens/features/events/domain/usecases/resolve_location_from_coordinates.dart';
 import 'package:local_happens/features/events/domain/usecases/update_event.dart';
 import 'package:local_happens/features/events/domain/usecases/upload_event_image.dart';
+import 'package:local_happens/features/events/domain/usecases/add_user_to_attendees.dart';
+import 'package:local_happens/features/events/domain/usecases/remove_user_from_attendees.dart';
 import 'package:local_happens/features/events/presentation/cubit/create_event_cubit.dart';
 import 'package:local_happens/features/events/presentation/cubit/event_details_cubit.dart';
 import 'package:local_happens/features/events/presentation/cubit/events_cubit.dart';
@@ -96,6 +98,7 @@ Future<void> init() async {
       getEventsByStatus: sl(),
       changeEventStatusUseCase: sl(),
       getUsersByIdsUseCase: sl(),
+      getCitiesByIdsUseCase: sl(),
     ),
   );
   sl.registerLazySingleton(() => GetEventsByStatus(sl()));
@@ -118,6 +121,8 @@ Future<void> init() async {
       getEventByIdUseCase: sl(),
       getUsersByIdsUseCase: sl(),
       getCitiesByIdsUseCase: sl(),
+      addUserToAttendeesUseCase: sl(),
+      removeUserFromAttendeesUseCase: sl(),
     ),
   );
   sl.registerFactory(
@@ -142,7 +147,7 @@ Future<void> init() async {
 
   // Repositories
   sl.registerLazySingleton<EventRepository>(
-    () => EventRepositoryImpl(remoteDatasource: sl()),
+    () => EventRepositoryImpl(remoteDatasource: sl(), firestore: sl()),
   );
   sl.registerLazySingleton<CitiesRepository>(
     () => CitiesRepositoryImpl(datasource: sl()),
@@ -165,6 +170,8 @@ Future<void> init() async {
   sl.registerLazySingleton(() => ResolveLocationFromCoordinates(sl()));
   sl.registerLazySingleton(() => GetOrCreateCity(sl()));
   sl.registerLazySingleton(() => UploadEventImage(sl()));
+  sl.registerLazySingleton(() => AddUserToAttendeesUseCase(sl()));
+  sl.registerLazySingleton(() => RemoveUserFromAttendeesUseCase(sl()));
 
   // Features - Favorites
   sl.registerFactory(
