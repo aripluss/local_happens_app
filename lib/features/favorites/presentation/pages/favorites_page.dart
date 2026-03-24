@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:local_happens/core/constants/app_text_styles.dart';
 import 'package:local_happens/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:local_happens/features/auth/presentation/cubit/auth_state.dart';
 import 'package:local_happens/features/events/domain/entities/event.dart';
@@ -28,7 +29,35 @@ class _FavoritesPageState extends State<FavoritesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Обране')),
+      appBar: AppBar(
+        title: BlocBuilder<AuthCubit, AuthState>(
+          builder: (context, authState) {
+            if (authState is! Authenticated) {
+              return const Text('Обране');
+            }
+
+            return BlocBuilder<FavoritesCubit, FavoritesState>(
+              builder: (context, favState) {
+                final count = favState is FavoritesLoaded
+                    ? favState.favorites.length
+                    : 0;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Обране', style: AppTextStyles.headline),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Ваші збережені події ($count)',
+                      style: AppTextStyles.value,
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+        ),
+        toolbarHeight: 76,
+      ),
       body: BlocBuilder<AuthCubit, AuthState>(
         builder: (context, authState) {
           if (authState is! Authenticated) {

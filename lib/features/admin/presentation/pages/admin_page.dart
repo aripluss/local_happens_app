@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:local_happens/core/constants/app_text_styles.dart';
 import 'package:local_happens/features/admin/presentation/cubit/admin_cubit.dart';
 import 'package:local_happens/features/admin/presentation/cubit/admin_state.dart';
 import 'package:local_happens/features/admin/presentation/widgets/admin_event_card.dart';
@@ -32,10 +33,8 @@ class _AdminPageState extends State<AdminPage> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Модерація',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  const Text('Модерація', style: AppTextStyles.headline),
+                  const SizedBox(height: 2),
                   Text(
                     'Управління подіями',
                     style: TextStyle(fontSize: 14, color: Colors.grey[600]),
@@ -54,6 +53,7 @@ class _AdminPageState extends State<AdminPage> {
             labelColor: Colors.black,
             unselectedLabelColor: Colors.grey,
           ),
+          toolbarHeight: 76,
         ),
         body: BlocBuilder<AdminCubit, AdminState>(
           builder: (context, state) {
@@ -85,7 +85,8 @@ class _AdminPageState extends State<AdminPage> {
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 8),
       itemCount: events.length,
-      itemBuilder: (context, index) => AdminEventCard(eventModel: events[index]),
+      itemBuilder: (context, index) =>
+          AdminEventCard(eventModel: events[index]),
     );
   }
 }
