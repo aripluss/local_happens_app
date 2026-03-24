@@ -29,58 +29,53 @@ class _EventsPageState extends State<EventsPage> {
 
     return Scaffold(
       extendBody: true,
-      appBar: AppBar(
-        toolbarHeight: 0,
-        scrolledUnderElevation: 0,
-        backgroundColor: Colors.transparent,
-        systemOverlayStyle: const SystemUiOverlayStyle(
-          statusBarBrightness: Brightness.light,
-          statusBarIconBrightness: Brightness.dark,
-        ),
-      ),
       backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              floating: true,
-              snap: true,
-              pinned: false,
-              toolbarHeight: 0,
-              backgroundColor: AppColors.background,
-              scrolledUnderElevation: 0,
-              bottom: PreferredSize(
-                preferredSize: Size.fromHeight(isLandscape ? 230.0 : 295.0),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(height: isLandscape ? 20 : 56),
-                      const Text('LocalHappens', style: AppTextStyles.headline),
-                      const SizedBox(height: 2),
-                      const Text('Знаходь цікаве поруч', style: AppTextStyles.value),
-                      SizedBox(height: isLandscape ? 16 : 24),
-                      EventsSearchBar(searchController: _searchController),
-                      SizedBox(height: isLandscape ? 16 : 24),
-                      const EventsCategoriesList(),
-                      SizedBox(height: isLandscape ? 20 : 32),
-                    ],
-                  ),
+
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            systemOverlayStyle: const SystemUiOverlayStyle(
+              statusBarBrightness: Brightness.light,
+              statusBarColor: AppColors.background,
+              statusBarIconBrightness: Brightness.dark,
+            ),
+            floating: true,
+            snap: true,
+            pinned: false,
+            toolbarHeight: 0,
+            backgroundColor: AppColors.background,
+            scrolledUnderElevation: 0,
+            bottom: PreferredSize(
+              preferredSize: Size.fromHeight(isLandscape ? 210.0 : 239.0),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // SizedBox(height: isLandscape ? 20 : 56),
+                    const Text('LocalHappens', style: AppTextStyles.headline),
+                    const SizedBox(height: 2),
+                    const Text(
+                      'Знаходь цікаве поруч',
+                      style: AppTextStyles.value,
+                    ),
+                    SizedBox(height: isLandscape ? 16 : 24),
+                    EventsSearchBar(searchController: _searchController),
+                    SizedBox(height: isLandscape ? 16 : 24),
+                    const EventsCategoriesList(),
+                    SizedBox(height: isLandscape ? 20 : 32),
+                  ],
                 ),
               ),
             ),
-            const SliverPadding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              sliver: EventsSliverGrid(),
-            ),
-          ],
-        ),
+          ),
+          const SliverPadding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            sliver: EventsSliverGrid(),
+          ),
+        ],
       ),
     );
   }
 }
-
-
-

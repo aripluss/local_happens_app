@@ -55,7 +55,7 @@ class AppRouter {
               ),
             ],
             child: () {
-              
+            
               final eventUiModel = state.extra as EventUiModel;
               return EventDetailsPage(eventUiModel: eventUiModel);
             }(),

@@ -55,9 +55,9 @@ class _EventsMapPageState extends State<EventsMapPage> {
     if (selectedEventId == null) return events;
 
     final selectedEventUiModel = events.cast<EventUiModel?>().firstWhere(
-          (eventUiModel) => eventUiModel?.event.id == selectedEventId,
-          orElse: () => null,
-        );
+      (eventUiModel) => eventUiModel?.event.id == selectedEventId,
+      orElse: () => null,
+    );
 
     if (selectedEventUiModel == null) return events;
 
@@ -98,7 +98,9 @@ class _EventsMapPageState extends State<EventsMapPage> {
             if (state is EventsLoaded) {
               final selectedId =
                   _selectedEventId ??
-                  (state.events.isNotEmpty ? state.events.first.event.id : null);
+                  (state.events.isNotEmpty
+                      ? state.events.first.event.id
+                      : null);
 
               final nearestEvents = _getNearestEvents(state.events, selectedId);
 
@@ -133,14 +135,17 @@ class _EventsMapPageState extends State<EventsMapPage> {
 
               return Stack(
                 children: [
-                  GoogleMap(
-                    myLocationEnabled: true,
-                    myLocationButtonEnabled: true,
-                    initialCameraPosition: const CameraPosition(
-                      target: LatLng(50.4501, 30.5234),
-                      zoom: 12,
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 150.0),
+                    child: GoogleMap(
+                      myLocationEnabled: true,
+                      myLocationButtonEnabled: true,
+                      initialCameraPosition: const CameraPosition(
+                        target: LatLng(50.4501, 30.5234),
+                        zoom: 12,
+                      ),
+                      markers: markers,
                     ),
-                    markers: markers,
                   ),
                   DraggableScrollableSheet(
                     initialChildSize: 0.30,
@@ -157,7 +162,7 @@ class _EventsMapPageState extends State<EventsMapPage> {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
+                              color: Colors.black.withValues(alpha: 0.05),
                               offset: const Offset(0, -1),
                               blurRadius: 2,
                               spreadRadius: 0,
@@ -181,7 +186,12 @@ class _EventsMapPageState extends State<EventsMapPage> {
                             Expanded(
                               child: ListView.separated(
                                 controller: scrollController,
-                                padding: const EdgeInsets.fromLTRB(24, 0, 16, 16),
+                                padding: const EdgeInsets.fromLTRB(
+                                  24,
+                                  0,
+                                  16,
+                                  16,
+                                ),
                                 itemCount: nearestEvents.length + 1,
                                 separatorBuilder: (_, index) {
                                   if (index == 0) {
@@ -203,9 +213,13 @@ class _EventsMapPageState extends State<EventsMapPage> {
                                     cityName: eventUiModel.cityName,
                                     onTap: () {
                                       setState(() {
-                                        _selectedEventId = eventUiModel.event.id;
+                                        _selectedEventId =
+                                            eventUiModel.event.id;
                                       });
-                                      context.push('/events/${eventUiModel.event.id}');
+                                      context.push(
+                                        '/events/${eventUiModel.event.id}',
+                                        extra: eventUiModel,
+                                      );
                                     },
                                   );
                                 },

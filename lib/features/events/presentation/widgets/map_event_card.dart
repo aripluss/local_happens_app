@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:local_happens/core/constants/app_colors.dart';
 import 'package:local_happens/core/constants/app_text_styles.dart';
@@ -52,12 +53,12 @@ class MapEventCard extends StatelessWidget {
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: AppColors.background.withOpacity(0.5),
+              color: AppColors.background.withValues(alpha: 0.5),
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 offset: const Offset(0, -1),
                 blurRadius: 2,
                 spreadRadius: 0,
@@ -68,30 +69,27 @@ class MapEventCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  event.imageUrl,
+                child: CachedNetworkImage(
+                  imageUrl: event.imageUrl,
                   width: 64,
                   height: 64,
                   fit: BoxFit.cover,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Container(
-                      width: 64,
-                      height: 64,
-                      color: AppColors.secondaryBackground,
-                      alignment: Alignment.center,
-                      child: const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    );
-                  },
-                  errorBuilder: (_, __, ___) => Container(
+                  placeholder: (context, url) => Container(
                     width: 64,
                     height: 64,
                     color: AppColors.secondaryBackground,
-                    child: const Icon(Icons.image_not_supported),
+                    alignment: Alignment.center,
+                    child: const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    width: 64,
+                    height: 64,
+                    color: AppColors.secondaryBackground,
+                    alignment: Alignment.center,
                   ),
                 ),
               ),
@@ -110,7 +108,7 @@ class MapEventCard extends StatelessWidget {
                     Row(
                       children: [
                         SvgPicture.asset(
-                          'assets/icons/calendar.svg',
+                          'lib/assets/icons/calendar.svg',
                           width: 12,
                           height: 12,
                           colorFilter: const ColorFilter.mode(
@@ -119,27 +117,18 @@ class MapEventCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 4),
-                        Text(
-                          date,
-                          style: AppTextStyles.bodySmall,
-                        ),
+                        Text(date, style: AppTextStyles.bodySmall),
                         const SizedBox(width: 4),
-                        const Text(
-                          '·',
-                          style: AppTextStyles.bodySmall,
-                        ),
+                        const Text('·', style: AppTextStyles.bodySmall),
                         const SizedBox(width: 4),
-                        Text(
-                          time,
-                          style: AppTextStyles.bodySmall,
-                        ),
+                        Text(time, style: AppTextStyles.bodySmall),
                       ],
                     ),
                     const SizedBox(height: 2),
                     Row(
                       children: [
                         SvgPicture.asset(
-                          'assets/icons/location.svg',
+                          'lib/assets/icons/location.svg',
                           width: 12,
                           height: 12,
                           colorFilter: const ColorFilter.mode(
