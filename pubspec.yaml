@@ -9,6 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_svg: ^2.0.7
 
   flutter_bloc: ^9.1.1
 
@@ -43,6 +44,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/icons/
     - lib/assets/icons/admin_icon.svg
     - lib/assets/icons/heart_icon.svg
     - lib/assets/icons/home_icon.svg
