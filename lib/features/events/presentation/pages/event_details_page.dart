@@ -497,6 +497,10 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
         return Icons.school;
       case 'технології':
         return Icons.computer;
+      case 'розваги':
+        return Icons.celebration;
+      case 'бізнес':
+        return Icons.business;
       default:
         return Icons.star;
     }

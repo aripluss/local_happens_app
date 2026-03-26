@@ -211,6 +211,12 @@ class EventCard extends StatelessWidget {
       case 'технології':
         iconData = Icons.computer;
         break;
+      case 'розваги':
+        iconData = Icons.celebration;
+        break;
+      case 'бізнес':
+        iconData = Icons.business;
+        break;
       default:
         iconData = Icons.star;
     }
